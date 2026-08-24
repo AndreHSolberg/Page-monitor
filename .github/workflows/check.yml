@@ -1,0 +1,42 @@
+name: Scheduled page check
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run check
+        env:
+          TARGET_URL: ${{ secrets.TARGET_URL }}
+          TARGET_PHRASE: ${{ secrets.TARGET_PHRASE }}
+          ENABLE_EMAIL: "true"
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          EMAIL_APP_PASSWORD: ${{ secrets.EMAIL_APP_PASSWORD }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+          ENABLE_PUSH: "true"
+          NOTIFY_TOPIC: ${{ secrets.NOTIFY_TOPIC }}
+        run: python check_page.py
+
+      - name: Save state back to repo
+        run: |
+          git config user.name "monitor-bot"
+          git config user.email "actions@github.com"
+          git add last_state.txt
+          git diff --staged --quiet || git commit -m "Update state"
+          git push
