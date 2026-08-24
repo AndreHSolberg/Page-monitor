@@ -6,7 +6,7 @@ from email.mime.text import MIMEText
 from datetime import datetime
 
 URL = "https://resale.fotball.no/list/resaleProducts/?lang=no"
-INGEN_BILLETTER_TEKST = "There are currently no tickets being resold"
+INGEN_BILLETTER_TEKST = "dette-finnes-ikke-paa-siden-123"
 STATUS_FIL = "siste_status.txt"
 
 ENABLE_EPOST = os.environ.get("ENABLE_EPOST", "true").lower() == "true"
